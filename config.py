@@ -1,6 +1,6 @@
-import logging
+# import logging
 from datetime import timedelta
-
+from loguru import logger
 token = "1597142066:AAFyj8hBQngSqd3KGAyBqcXyTQSOMGZ5_FY"
 
 intervals = {1: timedelta(minutes=5),
@@ -16,13 +16,14 @@ arguments = {"keywords": "",
             "limit":7,
             "format": "jpg",
             "size": ">400*300",
-            "print_urls":True,
-            "no_download": True
+            # "print_urls":True,
+            "no_download": True,
+            "silent_mode": True,
             } 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+# logging.basicConfig(level=logging.DEBUG,
+#                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# logger = logging.getLogger()
+# logger.setLevel(logging.INFO)
 
 db_config = {"HOST" : 'mongodb://localhost:27017',
              "DB": 'EbbinghausBot',
