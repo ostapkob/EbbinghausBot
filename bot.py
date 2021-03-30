@@ -103,7 +103,7 @@ class TranslateBot(Updater):
         time.sleep(50)
         self.check_out_db()
 
-    def listen(self):
+    def start_listen(self):
         th = threading.Thread(target=self.check_out_db)
         th.start()
 
@@ -126,7 +126,7 @@ def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
 
 def echo(update, context):
-    updater.send_word(update.effective_chat.id, update.message.text, steep=1)
+    updater.send_word(update.effective_chat.id, update.message.text, steep=0)
     updater.add_to_db(update.effective_chat.id, update.message.text)
     updater.update_item_db(update.effective_chat.id, update.message.text)
 
@@ -141,8 +141,5 @@ dispatcher.add_handler(start_handler)
 dispatcher.add_handler(echo_handler)
 
 if __name__ == "__main__":
-    updater.listen()
+    updater.start_listen()
     updater.start_polling()
-
-['http://www.sncplastic.com/wp-content/uploads/Peek-Gear.jpg', 'https://www.3dnatives.com/en/wp-content/uploads/sites/2/PEEKcover.jpg', 'https://sc04.alicdn.com/kf/H2703494779a04883bf42fc5314171a60A.jpg', 'https://www.ensingerplastics.com/-/media/ensinger/images/shapes/product-groups/tubes-peek-elekem-1280x480px.ashx?as=1&la=en&h=480&w=1280&iar=1&hash=C066D4C7C231BBF3965DDDA4BEE68A67', 'https://cdn.shortpixel.ai/client/q_lossless,ret_img,w_500,h_333/https://www.asp-plastics.com/wp-content/uploads/2020/09/Dexnyl-PEEK-Film-Natural-500x333.jpg', 'https://top3dshop.ru/image/cache/data/products/materials/apium/apium_peek_450_1-500x500.jpg', 'https://www.roechling.com/fileadmin/media/Roechling-Industrial/Materials/images/PEEK-sheet-plate-rod-tubing-SUSTAPEEK.jpg']
-print()
