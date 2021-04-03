@@ -18,7 +18,7 @@ arguments = {"keywords": "",
             "size": ">400*300",
             "print_urls":True,
             "no_download": True,
-            # "silent_mode": True,
+            "silent_mode": True,
             } 
 # logging.basicConfig(level=logging.DEBUG,
 #                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

@@ -2,3 +2,4 @@ venv/
 .vscode
 __pycache__/
 google-images-download
+google_images_download

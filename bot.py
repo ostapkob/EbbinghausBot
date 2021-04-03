@@ -28,7 +28,7 @@ class TranslateBot(Updater):
         if self.collection.find_one({'word':word, 'chat_id': chat_id}):
             return False
         with self.mongo_client:
-            obj = {'word': word, 'steep': 0, 'chat_id': chat_id, 'timestamp' : datetime.utcnow() }
+            obj = {'word': word, 'steep': 1, 'chat_id': chat_id, 'timestamp' : datetime.utcnow() + self.intervals[1] }
         self.collection.insert_one(obj)
         return True
     
@@ -128,7 +128,7 @@ def start(update, context):
 def echo(update, context):
     updater.send_word(update.effective_chat.id, update.message.text, steep=0)
     updater.add_to_db(update.effective_chat.id, update.message.text)
-    updater.update_item_db(update.effective_chat.id, update.message.text)
+    #updater.update_item_db(update.effective_chat.id, update.message.text)
 
 
 updater = TranslateBot(token=token)
