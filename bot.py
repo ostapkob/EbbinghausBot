@@ -58,13 +58,14 @@ class TranslateBot(Updater):
 
     def translate_to_target(self, word, target_langue=target_langue, native_langue=native_langue):
         translation = self.translator.translate(word, dest=target_langue, src=native_langue)
-        logger.debug('--> translte')
+        logger.debug('translte--> ')
         return translation.text
 
     def translate_from_target(self, word, target_langue=target_langue, native_langue=native_langue):
         word = word.lower()
         translation = self.translator.translate(word, dest=native_langue, src=target_langue)
-        logger.debug(f'--> translte {translation.text}')
+        logger.debug(f'--------------{word}--------------------')
+        logger.debug(f'translte --> {translation.text}')
         return translation.text
 
     def change_target_langue(self, target_langue):
@@ -78,14 +79,14 @@ class TranslateBot(Updater):
         audio.save(word+'.ogg')
         audio = open(word+'.ogg', 'rb')
         os.remove(word + '.ogg')
-        logger.debug('--> audio')
+        logger.debug('audio -->')
         return audio
 
     def hrefs_images(self, keyword, steep=0):
         arguments['keywords'] = keyword
         paths = self.response.download(arguments)   #passing the arguments to the function
         href = self.check_hrefs(paths[0][keyword], steep)
-        logger.debug(f'--> images {href}')
+        logger.debug(f'images --> {href}')
         return href
 
     def send_word(self, chat_id, word, steep ):
@@ -99,9 +100,14 @@ class TranslateBot(Updater):
                                 photo=image,
                                 caption=words)
         except telegram.error.BadRequest:
+<<<<<<< HEAD
             self.bot.send_message(chat_id=chat_id,   
                                 text=words)
 
+=======
+            self.bot.send_message(chat_id=chat_id,
+                                  text=words)
+>>>>>>> f0fc23e62f6db83aaafc1f479c120bfdfed68b05
         self.bot.send_audio(chat_id=chat_id,
                             audio=audio,
                             caption=words)
