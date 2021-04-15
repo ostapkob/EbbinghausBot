@@ -42,10 +42,18 @@ class TranslateBot(Updater):
             new_obj = {'$set': updated}
             self.collection.update_one(obj, new_obj)
             if obj['steep'] > 5:
-                logger.info('delite '+ chat_id + ' ' + word)
+                logger.info('delete '+ chat_id + ' ' + word)
                 self.collection.delete_one({'word':word, 'chat_id': chat_id})
             return True
         print('No')
+        return False
+
+    def delete_to_db(self, chat_id, word):
+        word = word.lower()
+        obj = self.collection.find_one({'word' : word, 'chat_id': chat_id})
+        if obj:
+            self.collection.delete_one(obj)
+            return True
         return False
 
     def translate_to_target(self, word, target_langue=target_langue, native_langue=native_langue):
@@ -86,30 +94,35 @@ class TranslateBot(Updater):
         audio = self.get_audio(word)
         words = '#' + word + ' - ' + target_word
         logger.debug(f"steep {steep}")
-        self.bot.send_photo(chat_id=chat_id,   
-                            photo=image,
-                            caption=words)
+        try:
+            self.bot.send_photo(chat_id=chat_id,   
+                                photo=image,
+                                caption=words)
+        except telegram.error.BadRequest:
+            self.bot.send_message(chat_id=chat_id,   
+                                text=words)
+
         self.bot.send_audio(chat_id=chat_id,
                             audio=audio,
                             caption=words)
 
-    def check_out_db(self): 
-        logger.info(str(datetime.utcnow()))
-        with self.mongo_client:
-            obj = self.collection.find({'timestamp': {'$lte': datetime.utcnow()}})
-        for user in obj:
-            self.send_word(user['chat_id'], user['word'], user['steep'])
-            self.update_item_db(user['chat_id'], user['word'])
-        time.sleep(50)
-        self.check_out_db()
+    def check_db(self): 
+        while True:
+            logger.info(str(datetime.utcnow()))
+            with self.mongo_client:
+                obj = self.collection.find({'timestamp': {'$lte': datetime.utcnow()}})
+            for user in obj:
+                self.send_word(user['chat_id'], user['word'], user['steep'])
+                self.update_item_db(user['chat_id'], user['word'])
+            time.sleep(60)
 
     def start_listen(self):
-        th = threading.Thread(target=self.check_out_db)
+        th = threading.Thread(target=self.check_db)
         th.start()
 
     def check_hrefs(self, hrefs, steep=0):
         """
-        check hrefs by working from steep, if all href bad return None
+        check hrefs by working from steep, if all hrefs bad return None
         """
         for i in range(steep, len(hrefs)):
             try:
@@ -126,13 +139,22 @@ def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
 
 def echo(update, context):
-    updater.send_word(update.effective_chat.id, update.message.text, steep=0)
-    updater.add_to_db(update.effective_chat.id, update.message.text)
-    #updater.update_item_db(update.effective_chat.id, update.message.text)
-
+    chat_id = update.effective_chat.id
+    message = update.message.text
+    if message[0] == ".":
+        if updater.delete_to_db(chat_id, message[1:]):
+            updater.bot.send_message(chat_id=chat_id,   
+                                text= "I delete this word")
+        else:
+            updater.bot.send_message(chat_id = chat_id,
+                                text="I didn't find this word")
+    else:
+        updater.send_word(chat_id, message, steep=0)
+        if not updater.add_to_db(chat_id, message):
+            updater.bot.send_message(chat_id = chat_id,
+                                text="I already know this word")
 
 updater = TranslateBot(token=token)
-
 start_handler = CommandHandler('start', start)
 echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
 
