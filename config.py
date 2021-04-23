@@ -13,7 +13,7 @@ intervals = {1: timedelta(minutes=5),
             } 
 
 arguments = {"keywords": "",
-            "limit":7,
+            "limit":9,
             "format": "jpg",
             "size": ">400*300",
             "print_urls":True,
@@ -29,3 +29,6 @@ db_config = {"HOST" : 'mongodb://localhost:27017',
              "DB": 'EbbinghausBot',
              "colection": 'users',
             }
+
+black_list = ['https://www.collinsdictionary.com',
+                'https://www.youtube.com']

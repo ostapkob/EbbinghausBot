@@ -5,7 +5,7 @@ import time
 import threading
 from google_images_download import google_images_download 
 from telegram.ext import CommandHandler
-from config import token, logger, intervals, db_config, arguments
+from config import token, logger, intervals, db_config, arguments, black_list
 from telegram.ext import Updater, MessageHandler, Filters
 from gtts import gTTS
 import telegram
@@ -100,19 +100,18 @@ class TranslateBot(Updater):
                                 photo=image,
                                 caption=words)
         except telegram.error.BadRequest:
-<<<<<<< HEAD
-            self.bot.send_message(chat_id=chat_id,   
-                                text=words)
-
-=======
             self.bot.send_message(chat_id=chat_id,
                                   text=words)
->>>>>>> f0fc23e62f6db83aaafc1f479c120bfdfed68b05
-        self.bot.send_audio(chat_id=chat_id,
-                            audio=audio,
-                            caption=words)
+        except telegram.error.NetworkError:
+            logger.error(f'====Error Network====')
+        try:
+            self.bot.send_audio(chat_id=chat_id,
+                                audio=audio,
+                                caption=words)
+        except telegram.error.NetworkError:
+            logger.error(f'====Error Network====')
 
-    def check_db(self): 
+    def revise_db(self): 
         while True:
             logger.info(str(datetime.utcnow()))
             with self.mongo_client:
@@ -123,7 +122,7 @@ class TranslateBot(Updater):
             time.sleep(60)
 
     def start_listen(self):
-        th = threading.Thread(target=self.check_db)
+        th = threading.Thread(target=self.revise_db)
         th.start()
 
     def check_hrefs(self, hrefs, steep=0):
@@ -131,6 +130,10 @@ class TranslateBot(Updater):
         check hrefs by working from steep, if all hrefs bad return None
         """
         for i in range(steep, len(hrefs)):
+            for site in black_list:
+                if hrefs[i].startswith(site):
+                    logger.info('BLACK LIST', hrefs[i])
+                    continue
             try:
                 requests.get(hrefs[i])
                 return hrefs[i]
