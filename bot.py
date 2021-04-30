@@ -74,11 +74,12 @@ class TranslateBot(Updater):
     def change_native_langue(self, native_langue):
         self.native_langue = native_langue
     
-    def get_audio(self, word, target_langue=target_langue):
+    def get_audio(self, word, remove_file=True, target_langue=target_langue):
         audio=gTTS(text=word, lang=target_langue, slow='False')
         audio.save(word+'.ogg')
         audio = open(word+'.ogg', 'rb')
-        os.remove(word + '.ogg')
+        if remove_file:
+            os.remove(word + '.ogg')
         logger.debug('audio -->')
         return audio
 
@@ -90,7 +91,7 @@ class TranslateBot(Updater):
         return href
 
     def send_word(self, chat_id, word, steep ):
-        target_word = self.translate_from_target(word) # TODO threding
+        target_word = self.translate_from_target(word) # TODO threding and quite
         image = self.hrefs_images(word, steep)
         audio = self.get_audio(word)
         words = '#' + word + ' - ' + target_word
@@ -117,7 +118,9 @@ class TranslateBot(Updater):
             with self.mongo_client:
                 obj = self.collection.find({'timestamp': {'$lte': datetime.utcnow()}})
             for user in obj:
-                self.send_word(user['chat_id'], user['word'], user['steep'])
+                thred_send_word = threading.Thread(target=self.send_word, args=(user['chat_id'], user['word'], user['steep']))
+                thred_send_word.start()
+                # self.send_word(user['chat_id'], user['word'], user['steep'])
                 self.update_item_db(user['chat_id'], user['word'])
             time.sleep(60)
 
