@@ -13,12 +13,12 @@ intervals = {1: timedelta(minutes=5),
             } 
 
 arguments = {"keywords": "",
-            "limit":9,
+            "limit":8,
             "format": "jpg",
             "size": ">400*300",
             "print_urls":True,
             "no_download": True,
-            "silent_mode": True,
+            # "silent_mode": True,
             } 
 # logging.basicConfig(level=logging.DEBUG,
 #                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -31,4 +31,5 @@ db_config = {"HOST" : 'mongodb://localhost:27017',
             }
 
 black_list = ['https://www.collinsdictionary.com',
-                'https://www.youtube.com']
+              'https://i.ytimg.com',
+              'https://www.youtube.com']

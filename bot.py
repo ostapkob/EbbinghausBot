@@ -129,11 +129,14 @@ class TranslateBot(Updater):
         """
         check hrefs by working from steep, if all hrefs bad return None
         """
+        logger.info(hrefs)
+        logger.info(steep)
         for i in range(steep, len(hrefs)):
+            logger.info(hrefs[i])
             for site in black_list:
                 if hrefs[i].startswith(site):
                     logger.info('BLACK LIST', hrefs[i])
-                    continue
+                    i +=1
             try:
                 requests.get(hrefs[i])
                 return hrefs[i]
@@ -145,7 +148,7 @@ class TranslateBot(Updater):
 
 
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a EbbinghausBot, sent me word")
 
 def echo(update, context):
     chat_id = update.effective_chat.id
