@@ -155,7 +155,7 @@ def start(update, context):
 
 def echo(update, context):
     chat_id = update.effective_chat.id
-    message = update.message.text
+    message = update.message.text.lower()
     if message[0] == ".":
         if updater.delete_to_db(chat_id, message[1:]):
             updater.bot.send_message(chat_id=chat_id,   
